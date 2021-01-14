@@ -202,13 +202,21 @@ Due to a widespread perception that encryption prevents MITM attacks, many appli
 
     $body = file_get_contents('https://api.example.com/search?q=sphinx');
 
-The above suffers from an obvious MITM vulnerability and any data resulting from such a HTTPS request can never be considered as representing a response from the intended service. This request should have been made by enabling server verification as follows:
+The above suffers from an obvious MITM vulnerability on SOME systems, and any data resulting from such a HTTPS request can never be considered as representing a response from the intended service. This request should have been made by enabling server verification as follows:
 
 .. code-block:: php
     :linenos:
 
     $context = stream_context_create(array('ssl' => array('verify_peer' => TRUE)));
     $body = file_get_contents('https://api.example.com/search?q=sphinx', false, $context);
+
+On other systems such as php8 on Ubuntu 18.04, and the default PHP7.2 on Ubuntu 18.04, this is not necessary, and the following test will give an exception as it should:
+
+.. code-block:: php
+    :linenos:
+
+    $body = file_get_contents('https://wrong.host.badssl.com/');
+
 
 Returning to sanity, the cURL extension does enable server verification out of the box so no option setting is required. However, programmers may demonstrate the following crazy approach to securing their libraries and applications. This one is easy to search for in any libraries your web application will depend on.
 
